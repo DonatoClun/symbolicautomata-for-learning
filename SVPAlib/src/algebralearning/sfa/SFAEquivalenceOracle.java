@@ -5,15 +5,14 @@
 
 package algebralearning.sfa;
 
-import java.util.LinkedList;
-import java.util.List;
-
-import org.sat4j.specs.TimeoutException;
-
 import algebralearning.oracles.EquivalenceOracle;
 import automata.sfa.SFA;
+import org.sat4j.specs.TimeoutException;
 import theory.BooleanAlgebra;
 import utilities.Pair;
+
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Implements the equivalence oracle for SFAs. 
@@ -21,7 +20,7 @@ import utilities.Pair;
  * @param <P> The type of predicates in the target SFA. 
  * @param <D> The domain of the algebra of the target SFA.
  */
-public class SFAEquivalenceOracle <P,D> extends EquivalenceOracle <SFA <P,D>, List <D>> {
+public class SFAEquivalenceOracle <P,D> implements EquivalenceOracle <SFA <P,D>, List <D>> {
 
 	private SFA <P,D> correctModel;
 	private BooleanAlgebra <P,D> ba;

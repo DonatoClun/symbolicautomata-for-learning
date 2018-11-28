@@ -5,7 +5,7 @@ import org.sat4j.specs.TimeoutException;
 import algebralearning.oracles.MembershipOracle;
 import theory.bdd.BDD;
 
-public class BDDMembershipOracle extends MembershipOracle <BDD> {
+public class BDDMembershipOracle implements MembershipOracle <BDD> {
 
 	private BDD target;
 

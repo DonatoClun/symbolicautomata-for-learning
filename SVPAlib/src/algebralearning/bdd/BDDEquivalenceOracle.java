@@ -5,7 +5,7 @@ import org.sat4j.specs.TimeoutException;
 import algebralearning.oracles.EquivalenceOracle;
 import theory.bdd.BDD;
 
-public class BDDEquivalenceOracle extends EquivalenceOracle <BDD, BDD> {
+public class BDDEquivalenceOracle implements EquivalenceOracle <BDD, BDD> {
 
 	private BDD target;
 

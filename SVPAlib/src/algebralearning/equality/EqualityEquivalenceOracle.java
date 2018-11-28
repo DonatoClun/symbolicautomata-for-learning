@@ -5,7 +5,7 @@ import org.sat4j.specs.TimeoutException;
 import algebralearning.oracles.EquivalenceOracle;
 import theory.BooleanAlgebra;
 
-public class EqualityEquivalenceOracle <P, D> extends EquivalenceOracle <P,D> {
+public class EqualityEquivalenceOracle <P, D> implements EquivalenceOracle <P,D> {
 
 	BooleanAlgebra <P,D> ba;
 	P target;

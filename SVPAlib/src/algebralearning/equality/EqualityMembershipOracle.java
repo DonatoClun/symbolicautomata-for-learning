@@ -5,7 +5,7 @@ import org.sat4j.specs.TimeoutException;
 import algebralearning.oracles.MembershipOracle;
 import theory.BooleanAlgebra;
 
-public class EqualityMembershipOracle <P, D> extends MembershipOracle <D> {
+public class EqualityMembershipOracle <P, D> implements MembershipOracle <D> {
 
 	private P target;
 	private BooleanAlgebra <P,D>ba;

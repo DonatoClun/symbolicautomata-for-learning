@@ -9,15 +9,6 @@
 
 package algebralearning.sfa;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.LinkedList;
-import java.util.List;
-
-import org.sat4j.specs.TimeoutException;
-
 import algebralearning.AlgebraLearner;
 import algebralearning.AlgebraLearnerFactory;
 import algebralearning.oracles.EquivalenceOracle;
@@ -25,8 +16,11 @@ import algebralearning.oracles.MembershipOracle;
 import automata.sfa.SFA;
 import automata.sfa.SFAInputMove;
 import automata.sfa.SFAMove;
+import org.sat4j.specs.TimeoutException;
 import theory.BooleanAlgebra;
 import utilities.Pair;
+
+import java.util.*;
 
 /**
  * The MAT* algorithm relies in underlying boolean algebra learning algorithms in order to infer the 
@@ -35,7 +29,7 @@ import utilities.Pair;
  *
  * @param <D> The domain of the boolean algebra of the target SFA.
  */
-class BALearnerSimulatedMembershipOracle <D> extends MembershipOracle <D> {
+class BALearnerSimulatedMembershipOracle <D> implements MembershipOracle <D> {
 	
 	private DiscriminationTree <D> tree;
 	private List<D> src;

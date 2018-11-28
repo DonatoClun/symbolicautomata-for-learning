@@ -5,24 +5,18 @@ import algebralearning.finitealgebra.FiniteAlgebraLearnerFactory;
 import algebralearning.oracles.EquivalenceOracle;
 import algebralearning.oracles.MembershipOracle;
 import algebralearning.sfa.SFAAlgebraLearner;
-
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.LinkedList;
-import java.util.List;
-
-import org.sat4j.specs.TimeoutException;
-
 import automata.sfa.SFA;
 import automata.sfa.SFAInputMove;
 import automata.sfa.SFAMove;
+import org.sat4j.specs.TimeoutException;
 import theory.bdd.BDD;
 import theory.bdd.BDDFactory;
 import theory.binaryalgebra.BinaryBooleanAlgebra;
 
+import java.util.*;
 
-class BDDToSFAMembershipOracle extends MembershipOracle <List<Boolean>> {
+
+class BDDToSFAMembershipOracle implements MembershipOracle <List<Boolean>> {
 
 	private MembershipOracle <BDD> memb;
 	private BDDFactory factory;

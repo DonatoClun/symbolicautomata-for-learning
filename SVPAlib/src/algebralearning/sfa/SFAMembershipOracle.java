@@ -4,15 +4,14 @@
  */
 package algebralearning.sfa;
 
+import algebralearning.oracles.MembershipOracle;
+import automata.sfa.SFA;
+import org.sat4j.specs.TimeoutException;
+import theory.BooleanAlgebra;
+
 import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.List;
-
-import org.sat4j.specs.TimeoutException;
-
-import algebralearning.oracles.MembershipOracle;
-import automata.sfa.SFA;
-import theory.BooleanAlgebra;
 /**
  * 
  * Membership oracle class used by the SFA Learning algorithm implementation.
@@ -20,7 +19,7 @@ import theory.BooleanAlgebra;
  * @param <P> The type of predicates used by the SFA.
  * @param <D> The underlying domain used by the SFA.
  */
-public class SFAMembershipOracle <P, D> extends MembershipOracle <List<D>> {
+public class SFAMembershipOracle <P, D> implements MembershipOracle <List<D>> {
 	
 	private SFA <P,D> sfa;
 	private BooleanAlgebra <P,D> ba;

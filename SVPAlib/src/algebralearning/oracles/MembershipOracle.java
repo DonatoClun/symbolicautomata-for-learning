@@ -13,7 +13,7 @@ import org.sat4j.specs.TimeoutException;
  * 
  * @param <D> Domain of the underlying Boolean algebra
  */
-public abstract class MembershipOracle <D> {
+public interface MembershipOracle <D> {
 	
 	/** 
 	 * Return the result of a running on the input parameter to the target function. 

@@ -6,7 +6,7 @@ package algebralearning.oracles;
 
 import org.sat4j.specs.TimeoutException;
 
-public abstract class EquivalenceOracle <P,D> {
+public interface EquivalenceOracle <P,D> {
 
 	/**
 	 * Return a counterexample between the model and the target
