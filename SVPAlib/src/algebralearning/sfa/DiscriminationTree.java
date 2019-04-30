@@ -6,6 +6,9 @@
 
 package algebralearning.sfa;
 
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -215,8 +218,78 @@ public class DiscriminationTree <D> {
     public boolean isTreeComplete() {
     		return isMissingLeafFixed;
     }
-    
-    
-    
+
+
+    public boolean createDotFile(String name, String path) {
+        try {
+            FileWriter fw = new FileWriter(path + name + (name.endsWith(".dot") ? "" : ".dot"));
+            fw.write("digraph " + name + "{\n /*rankdir=LR;*/ \n");
+
+            getDotCode(root, fw);
+
+            fw.write("}");
+            fw.close();
+        } catch (IOException e) {
+            System.out.println(e);
+            return false;
+        }
+        return true;
+    }
+
+    private void getDotCode(TreeNode<D> node, Writer w) throws IOException {
+        String thisNodeId = getDotNodeId(node, "");
+        String thisNodeLabel = getDotNodeLabel(node);
+        if (node.isLeaf()) {
+            w.write(thisNodeId);
+            w.write(" [shape=box,label="+ thisNodeLabel + "];\n");
+        } else {
+            w.write(thisNodeId);
+            w.write(" [label=");
+            w.write(thisNodeLabel);
+            w.write("];\n");
+
+            if (node.trueChild != null) {
+                String trueChildId = getDotNodeId(node.trueChild, "");
+                w.write(thisNodeId);
+                w.write(" -> ");
+                w.write(trueChildId);
+                w.write(" [label=\"T\"];\n");
+                getDotCode(node.trueChild, w);
+            } else {
+                String missingTrueNodeId = getDotNodeId(node, "T");
+                w.write(thisNodeId);
+                w.write(" -> ");
+                w.write(missingTrueNodeId);
+                w.write("[label=\"T\"];\n");
+                w.write(missingTrueNodeId);
+                w.write(" [color=white, label=\"\"];\n");
+            }
+
+            if (node.falseChild != null) {
+                String falseChildId = getDotNodeId(node.falseChild, "");
+                w.write(thisNodeId);
+                w.write(" -> ");
+                w.write(falseChildId);
+                w.write(" [label=\"F\"];\n");
+                getDotCode(node.falseChild, w);
+            } else {
+                String missingFalseNodeId = getDotNodeId(node, "F");
+                w.write(thisNodeId);
+                w.write(" -> ");
+                w.write(missingFalseNodeId);
+                w.write("[label=\"F\"];\n");
+                w.write(missingFalseNodeId);
+                w.write(" [color=white, label=\"\"];\n");
+            }
+        }
+    }
+
+    private String getDotNodeId(TreeNode<D> node, String att) {
+        return "\"" + node.hashCode() + att + "\"";
+    }
+
+    private String getDotNodeLabel(TreeNode<D> node) {
+        return "\"" + node.getLabel().toString().replace("\"","\\\"") + "\"";
+    }
     
 }

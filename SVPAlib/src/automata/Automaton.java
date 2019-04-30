@@ -220,6 +220,30 @@ public abstract class Automaton<P, S> {
 		return isFinalConfiguration(currConf);
 	}
 
+	public boolean acceptsFromState(List<S> input, BooleanAlgebra<P, S> ba, int state) throws TimeoutException {
+		Collection<Integer> currConf = getEpsClosure(state, ba);
+		for (S el : input) {
+			currConf = getNextState(currConf, el, ba);
+			currConf = getEpsClosure(currConf, ba);
+			if (currConf.isEmpty())
+				return false;
+		}
+
+		return isFinalConfiguration(currConf);
+	}
+
+	public Collection<Integer> getReachedConfiguration(List<S> input, BooleanAlgebra<P, S> ba) throws TimeoutException {
+		Collection<Integer> currConf = getEpsClosure(getInitialState(), ba);
+		for (S el : input) {
+			currConf = getNextState(currConf, el, ba);
+			currConf = getEpsClosure(currConf, ba);
+			if (currConf.isEmpty())
+				return currConf;
+		}
+
+		return currConf;
+	}
+
 	// ------------------------------------------------------
 	// Accessory functions
 	// ------------------------------------------------------
