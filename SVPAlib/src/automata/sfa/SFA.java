@@ -191,12 +191,7 @@ public class SFA<P, S> extends Automaton<P, S> {
 			aut = aut.normalize(ba);
 
 		if (remUnreachableStates) {
-			int stateCountBefore = aut.stateCount();
 			aut = removeDeadOrUnreachableStates(aut, ba);
-			int stateCountChange = aut.stateCount() - stateCountBefore;
-			if (stateCountChange != 0) {
-				changes++;
-			}
 		}
 
 		if (aut.finalStates.isEmpty())
@@ -204,8 +199,6 @@ public class SFA<P, S> extends Automaton<P, S> {
 
 		return aut;
 	}
-
-	private static int changes = 0;
 
 	/**
 	 * Gives the option to create an automaton exactly as given by the parameters, avoiding all normalizations.
