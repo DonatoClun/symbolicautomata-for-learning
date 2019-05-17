@@ -1247,6 +1247,8 @@ public class SFA<P, S> extends Automaton<P, S> {
 	 */
 	public static <A, B> SFA<A, B> determinize(SFA<A, B> aut, BooleanAlgebra<A, B> ba, long timeout)
 			throws TimeoutException {
+		if (aut.isDeterministic) //check if already flagged as deterministic
+			return aut;
 
 		long startTime = System.currentTimeMillis();
 
