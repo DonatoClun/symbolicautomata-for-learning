@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>SVPABenchmark</groupId>
   <artifactId>SVPABenchmark</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>0.0.1-CUSTOM</version>
   
   <properties>
       <maven.compiler.source>1.8</maven.compiler.source>
@@ -38,7 +38,7 @@
         <dependency>
             <groupId>cs.wisc.edu</groupId>
             <artifactId>SVPAlib</artifactId>
-            <version>1.0</version>
+            <version>1.0-CUSTOM</version>
         </dependency>
         <dependency>
         	<groupId>cs.wisc.edu</groupId>
