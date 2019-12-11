@@ -168,6 +168,7 @@ public class CharPred extends ICharPred{
 				sb.append(printChar(pair.left));
 				sb.append("-");
 				sb.append(printChar(pair.right));
+				sb.append(' ');
 			}
 		}
 		sb.append("]");

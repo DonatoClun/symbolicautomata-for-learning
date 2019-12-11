@@ -163,6 +163,49 @@ public abstract class Automaton<P, S> {
 	 * @throws TimeoutException 
 	 */
 	public List<S> getWitness(BooleanAlgebra<P, S> ba) throws TimeoutException {
+		return getWitnessFrom(ba, getInitialState());
+	}
+
+	public List<S> getWitnessTo(BooleanAlgebra<P, S> ba, Integer stateId) throws TimeoutException {
+		if (isEmpty)
+			return null;
+
+		Map<Integer, LinkedList<S>> witMap = new HashMap<Integer, LinkedList<S>>();
+		witMap.put(stateId, new LinkedList<S>());
+
+		HashSet<Integer> reachedStates = new HashSet<Integer>();
+		reachedStates.add(stateId);
+		HashSet<Integer> barreer = new HashSet<Integer>();
+		barreer.add(stateId);
+
+		while (!barreer.isEmpty()) {
+
+			ArrayList<Move<P, S>> moves = new ArrayList<Move<P, S>>(getMovesTo(barreer));
+
+			barreer = new HashSet<Integer>();
+			for (Move<P, S> move : moves) {
+				if (!reachedStates.contains(move.from)) {
+					barreer.add(move.from);
+					reachedStates.add(move.from);
+				}
+				LinkedList<S> newWit = new LinkedList<S>(witMap.get(move.to));
+				if (!move.isEpsilonTransition()) {
+					newWit.addFirst(move.getWitness(ba));
+				}
+				if (!witMap.containsKey(move.from))
+					witMap.put(move.from, newWit);
+				else {
+					LinkedList<S> oldWit = witMap.get(move.from);
+					if (oldWit.size() > newWit.size())
+						witMap.put(move.from, newWit);
+				}
+			}
+
+		}
+		return witMap.get(getInitialState());
+	}
+
+	public List<S> getWitnessFrom(BooleanAlgebra<P, S> ba, Integer stateId) throws TimeoutException {
 		if (isEmpty)
 			return null;
 
@@ -197,7 +240,7 @@ public abstract class Automaton<P, S> {
 			}
 
 		}
-		return witMap.get(getInitialState());
+		return witMap.get(stateId);
 	}
 
 	/**

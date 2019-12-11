@@ -146,7 +146,8 @@ public class SVPA<U, S> extends VPAutomaton<U, S> {
 		return removeUnreachableStates(aut, ba);
 	}
 
-	public boolean accepts(List<TaggedSymbol<S>> input, BooleanAlgebra<U, S> ba) throws TimeoutException {
+	public Collection<Pair<Integer, Stack<Pair<Integer, S>>>> getConfiguration(
+			List<TaggedSymbol<S>> input, BooleanAlgebra<U, S> ba) throws TimeoutException {
 
 		Collection<Pair<Integer, Stack<Pair<Integer, S>>>> currConf = new HashSet<Pair<Integer, Stack<Pair<Integer, S>>>>();
 
@@ -159,10 +160,20 @@ public class SVPA<U, S> extends VPAutomaton<U, S> {
 			currConf = getNextState(currConf, el, ba);
 			currConf = getConfigurationEpsClosure(currConf, ba);
 			if (currConf.isEmpty())
-				return false;
+				return null;
 		}
 
-		for (Pair<Integer, Stack<Pair<Integer, S>>> state : currConf)
+		return currConf;
+	}
+
+	public boolean accepts(List<TaggedSymbol<S>> input, BooleanAlgebra<U, S> ba) throws TimeoutException {
+		Collection<Pair<Integer, Stack<Pair<Integer, S>>>> conf = getConfiguration(input, ba);
+
+		if (conf == null) {
+			return false;
+		}
+
+		for (Pair<Integer, Stack<Pair<Integer, S>>> state : conf)
 			if (isFinalState(state.first))
 				return true;
 
