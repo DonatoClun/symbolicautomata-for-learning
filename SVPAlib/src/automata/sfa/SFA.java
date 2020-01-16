@@ -753,6 +753,7 @@ public class SFA<P, S> extends Automaton<P, S> {
 		// again
 		SFA<A, B> result = MkSFA(transitions, initialState, finalStates, ba, false);
 		result.isDeterministic = true;
+		result.isTotal = true;
 		return result;
 	}
 
@@ -2018,6 +2019,9 @@ public class SFA<P, S> extends Automaton<P, S> {
 	 * Returns the set of transitions starting set of states
 	 */
 	public Collection<SFAInputMove<P, S>> getInputMovesFrom(Collection<Integer> stateSet) {
+		if (stateSet.size() == 1) {
+			return getInputMovesFrom(stateSet.iterator().next());
+		}
 		Collection<SFAInputMove<P, S>> transitions = new LinkedList<SFAInputMove<P, S>>();
 		for (Integer state : stateSet)
 			transitions.addAll(getInputMovesFrom(state));

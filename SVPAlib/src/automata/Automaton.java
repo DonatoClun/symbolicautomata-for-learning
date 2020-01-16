@@ -167,9 +167,6 @@ public abstract class Automaton<P, S> {
 	}
 
 	public List<S> getWitnessTo(BooleanAlgebra<P, S> ba, Integer stateId) throws TimeoutException {
-		if (isEmpty)
-			return null;
-
 		Map<Integer, LinkedList<S>> witMap = new HashMap<Integer, LinkedList<S>>();
 		witMap.put(stateId, new LinkedList<S>());
 
@@ -389,6 +386,9 @@ public abstract class Automaton<P, S> {
 	}
 
 	protected Collection<Integer> getEpsClosure(Collection<Integer> fronteer, BooleanAlgebra<P, S> ba) {
+		if (isEpsilonFree) {
+			return fronteer;
+		}
 
 		Collection<Integer> reached = new HashSet<Integer>(fronteer);
 		LinkedList<Integer> toVisit = new LinkedList<Integer>(fronteer);
