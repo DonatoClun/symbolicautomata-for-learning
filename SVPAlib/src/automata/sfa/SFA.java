@@ -11,6 +11,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -55,7 +56,7 @@ public class SFA<P, S> extends Automaton<P, S> {
 	 */
 	public static <A, B> SFA<A, B> getEmptySFA(BooleanAlgebra<A, B> ba) throws TimeoutException {
 		SFA<A, B> aut = new SFA<A, B>();
-		aut.states.add(0);
+		aut.addState(0);
 		aut.initialState = 0;
 		aut.isDeterministic = true;
 		aut.isEmpty = true;
@@ -72,7 +73,7 @@ public class SFA<P, S> extends Automaton<P, S> {
 	 */
 	public static <A, B> SFA<A, B> getFullSFA(BooleanAlgebra<A, B> ba) throws TimeoutException {
 		SFA<A, B> aut = new SFA<A, B>();
-		aut.states.add(0);
+		aut.addState(0);
 		aut.finalStates.add(0);
 		aut.initialState = 0;
 		aut.isDeterministic = true;
@@ -155,6 +156,25 @@ public class SFA<P, S> extends Automaton<P, S> {
 		this.maxStateId = maxStateId;
 	}
 
+	public void addState(Integer stateId) {
+		if (inputMovesFrom.get(stateId) == null)
+			inputMovesFrom.put(stateId, new HashSet<>());
+		if (inputMovesTo.get(stateId) == null)
+			inputMovesTo.put(stateId, new HashSet<>());
+		if (epsilonFrom.get(stateId) == null)
+			epsilonFrom.put(stateId, new HashSet<>());
+		if (epsilonTo.get(stateId) == null)
+			epsilonTo.put(stateId, new HashSet<>());
+
+		states.add(stateId);
+	}
+
+	public void addAllStates(Collection<Integer> states) {
+		for (Integer state : states) {
+			addState(state);
+		}
+	}
+
 	/**
 	 * Create an automaton and removes unreachable states
 	 * 
@@ -191,8 +211,8 @@ public class SFA<P, S> extends Automaton<P, S> {
 
 		SFA<A, B> aut = new SFA<A, B>();
 
-		aut.states.add(initialState);
-		aut.states.addAll(finalStates);
+		aut.addState(initialState);
+		aut.addAllStates(finalStates);
 
 		aut.initialState = initialState;
 		aut.finalStates.addAll(finalStates);
@@ -225,8 +245,8 @@ public class SFA<P, S> extends Automaton<P, S> {
 					throws TimeoutException{
 		SFA<A, B> aut = new SFA<A, B>();
 
-		aut.states.add(initialState);
-		aut.states.addAll(finalStates);
+		aut.addState(initialState);
+		aut.addAllStates(finalStates);
 
 		aut.initialState = initialState;
 		aut.finalStates.addAll(finalStates);
@@ -265,8 +285,8 @@ public class SFA<P, S> extends Automaton<P, S> {
 			if (transition.to > maxStateId)
 				maxStateId = transition.to;
 
-			states.add(transition.from);
-			states.add(transition.to);
+			addState(transition.from);
+			addState(transition.to);
 
 			if (!transition.isEpsilonTransition()) {
 				getInputMovesFrom(transition.from).add((SFAInputMove<P, S>) transition);
@@ -1645,7 +1665,7 @@ public class SFA<P, S> extends Automaton<P, S> {
 		Pair<Pair<Integer, Integer>, Boolean> initStatePair = new Pair<Pair<Integer, Integer>, Boolean>(
 				new Pair<Integer, Integer>(aut1.initialState, aut2.initialState), true);
 		product.initialState = 0;
-		product.states.add(0);
+		product.addState(0);
 
 		reached.put(initStatePair, 0);
 		reachedRev.put(0, initStatePair);
@@ -1693,7 +1713,7 @@ public class SFA<P, S> extends Automaton<P, S> {
 								reachedRev.put(totStates, nextState);
 
 								toVisit.add(nextState);
-								product.states.add(totStates);
+								product.addState(totStates);
 								nextStateId = totStates;
 								totStates++;
 							} else
@@ -1728,7 +1748,7 @@ public class SFA<P, S> extends Automaton<P, S> {
 								reachedRev.put(totStates, nextState);
 
 								toVisit.add(nextState);
-								product.states.add(totStates);
+								product.addState(totStates);
 								nextStateId = totStates;
 								totStates++;
 							} else
@@ -2059,15 +2079,15 @@ public class SFA<P, S> extends Automaton<P, S> {
 
 	@Override
 	public Collection<Move<P, S>> getMovesFrom(Integer state) {
-		Collection<Move<P, S>> transitions = new LinkedList<Move<P, S>>();
-		transitions.addAll(getTransitionsFrom(state));
+		Collection<SFAMove<P, S>> transitionsFrom = getTransitionsFrom(state);
+		Collection<Move<P, S>> transitions = new ArrayList<>(transitionsFrom);
 		return transitions;
 	}
 
 	@Override
 	public Collection<Move<P, S>> getMovesTo(Integer state) {
-		Collection<Move<P, S>> transitions = new LinkedList<Move<P, S>>();
-		transitions.addAll(getTransitionsTo(state));
+		Collection<SFAMove<P, S>> transitionsTo = getTransitionsTo(state);
+		Collection<Move<P, S>> transitions = new ArrayList<>(transitionsTo);
 		return transitions;
 	}
 
