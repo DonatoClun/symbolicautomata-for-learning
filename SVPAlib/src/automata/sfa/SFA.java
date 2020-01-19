@@ -8,6 +8,7 @@ package automata.sfa;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -54,9 +55,7 @@ public class SFA<P, S> extends Automaton<P, S> {
 	 */
 	public static <A, B> SFA<A, B> getEmptySFA(BooleanAlgebra<A, B> ba) throws TimeoutException {
 		SFA<A, B> aut = new SFA<A, B>();
-		aut.states = new HashSet<Integer>();
 		aut.states.add(0);
-		aut.finalStates = new HashSet<Integer>();
 		aut.initialState = 0;
 		aut.isDeterministic = true;
 		aut.isEmpty = true;
@@ -73,9 +72,8 @@ public class SFA<P, S> extends Automaton<P, S> {
 	 */
 	public static <A, B> SFA<A, B> getFullSFA(BooleanAlgebra<A, B> ba) throws TimeoutException {
 		SFA<A, B> aut = new SFA<A, B>();
-		aut.states = new HashSet<Integer>();
 		aut.states.add(0);
-		aut.finalStates = new HashSet<Integer>(aut.states);
+		aut.finalStates.add(0);
 		aut.initialState = 0;
 		aut.isDeterministic = true;
 		aut.isEmpty = false;
@@ -90,13 +88,13 @@ public class SFA<P, S> extends Automaton<P, S> {
 	// ------------------------------------------------------
 
 	private Integer initialState;
-	private Collection<Integer> states;
-	private Collection<Integer> finalStates;
+	private final Collection<Integer> states;
+	private final Collection<Integer> finalStates;
 
-	protected Map<Integer, Collection<SFAInputMove<P, S>>> inputMovesFrom;
-	protected Map<Integer, Collection<SFAInputMove<P, S>>> inputMovesTo;
-	protected Map<Integer, Collection<SFAEpsilon<P, S>>> epsilonFrom;
-	protected Map<Integer, Collection<SFAEpsilon<P, S>>> epsilonTo;
+	private final Map<Integer, Collection<SFAInputMove<P, S>>> inputMovesFrom;
+	private final Map<Integer, Collection<SFAInputMove<P, S>>> inputMovesTo;
+	private final Map<Integer, Collection<SFAEpsilon<P, S>>> epsilonFrom;
+	private final Map<Integer, Collection<SFAEpsilon<P, S>>> epsilonTo;
 
 	private Integer maxStateId;
 	private Integer transitionCount;
@@ -139,6 +137,24 @@ public class SFA<P, S> extends Automaton<P, S> {
 		maxStateId = 0;
 	}
 
+	private SFA(Collection<Integer> finalStates, Collection<Integer> states,
+			Map<Integer, Collection<SFAInputMove<P, S>>> inputMovesFrom,
+			Map<Integer, Collection<SFAInputMove<P, S>>> inputMovesTo,
+			Map<Integer, Collection<SFAEpsilon<P, S>>> epsilonFrom,
+			Map<Integer, Collection<SFAEpsilon<P, S>>> epsilonTo,
+			Integer transitionCount,
+			Integer maxStateId) {
+		super();
+		this.finalStates = finalStates;
+		this.states = states;
+		this.inputMovesFrom = inputMovesFrom;
+		this.inputMovesTo = inputMovesTo;
+		this.epsilonFrom = epsilonFrom;
+		this.epsilonTo = epsilonTo;
+		this.transitionCount = transitionCount;
+		this.maxStateId = maxStateId;
+	}
+
 	/**
 	 * Create an automaton and removes unreachable states
 	 * 
@@ -175,12 +191,11 @@ public class SFA<P, S> extends Automaton<P, S> {
 
 		SFA<A, B> aut = new SFA<A, B>();
 
-		aut.states = new HashSet<Integer>();
 		aut.states.add(initialState);
 		aut.states.addAll(finalStates);
 
 		aut.initialState = initialState;
-		aut.finalStates = finalStates;
+		aut.finalStates.addAll(finalStates);
 		if (finalStates.isEmpty())
 			return getEmptySFA(ba);
 
@@ -210,12 +225,11 @@ public class SFA<P, S> extends Automaton<P, S> {
 					throws TimeoutException{
 		SFA<A, B> aut = new SFA<A, B>();
 
-		aut.states = new HashSet<Integer>();
 		aut.states.add(initialState);
 		aut.states.addAll(finalStates);
 
 		aut.initialState = initialState;
-		aut.finalStates = finalStates;
+		aut.finalStates.addAll(finalStates);
 
 		for (SFAMove<A, B> t : transitions)
 			aut.addTransition(t, ba, true);
@@ -569,7 +583,7 @@ public class SFA<P, S> extends Automaton<P, S> {
 			throws TimeoutException {
 
 		// make aut total to make sure it has a sink state
-		SFA<A, B> autTotal = aut.mkTotal(ba, timeout);
+		SFA<A, B> autTotal = aut.isTotal ? aut : aut.mkTotal(ba, timeout);
 
 		// the final states of the complement are
 		// autTotal.states minus autTotal.finalStates
@@ -581,6 +595,7 @@ public class SFA<P, S> extends Automaton<P, S> {
 		SFA<A, B> sfa = MkSFA(autTotal.getTransitions(), autTotal.initialState, newFinalStates, ba,
 				false);
 		sfa.isDeterministic = aut.isDeterministic;
+		sfa.isTotal = aut.isTotal;
 		return sfa;
 	}
 	
@@ -1734,7 +1749,7 @@ public class SFA<P, S> extends Automaton<P, S> {
 			if (stP.first.first != stP.first.second) {
 				SFA<A, B> left = (SFA<A, B>) product.clone();
 				SFA<A, B> right = (SFA<A, B>) product.clone();
-				left.finalStates = new HashSet<Integer>();
+				left.finalStates.clear();
 				left.finalStates.add(aliveSt);
 				right.initialState = aliveSt;
 
@@ -2079,25 +2094,39 @@ public class SFA<P, S> extends Automaton<P, S> {
 
 	@Override
 	public Object clone() {
-		SFA<P, S> cl = new SFA<P, S>();
-
+		SFA<P, S> cl = new SFA<P, S>(new HashSet<Integer>(finalStates),
+				new HashSet<Integer>(states),
+				new HashMap<Integer, Collection<SFAInputMove<P, S>>>(inputMovesFrom),
+				new HashMap<Integer, Collection<SFAInputMove<P, S>>>(inputMovesTo),
+				new HashMap<Integer, Collection<SFAEpsilon<P, S>>>(epsilonFrom),
+				new HashMap<Integer, Collection<SFAEpsilon<P, S>>>(epsilonTo),
+				transitionCount,
+				maxStateId);
 		cl.isDeterministic = isDeterministic;
 		cl.isTotal = isTotal;
 		cl.isEmpty = isEmpty;
 		cl.isEpsilonFree = isEpsilonFree;
 
-		cl.maxStateId = maxStateId;
-		cl.transitionCount = transitionCount;
-
-		cl.states = new HashSet<Integer>(states);
 		cl.initialState = initialState;
-		cl.finalStates = new HashSet<Integer>(finalStates);
 
-		cl.inputMovesFrom = new HashMap<Integer, Collection<SFAInputMove<P, S>>>(inputMovesFrom);
-		cl.inputMovesTo = new HashMap<Integer, Collection<SFAInputMove<P, S>>>(inputMovesTo);
+		return cl;
+	}
 
-		cl.epsilonFrom = new HashMap<Integer, Collection<SFAEpsilon<P, S>>>(epsilonFrom);
-		cl.epsilonTo = new HashMap<Integer, Collection<SFAEpsilon<P, S>>>(epsilonTo);
+	public SFA<P, S> cloneReadonly() {
+		SFA<P, S> cl = new SFA<P, S>(new HashSet<Integer>(finalStates),
+				Collections.unmodifiableCollection(new HashSet<Integer>(states)),
+				Collections.unmodifiableMap(new HashMap<Integer, Collection<SFAInputMove<P, S>>>(inputMovesFrom)),
+				Collections.unmodifiableMap(new HashMap<Integer, Collection<SFAInputMove<P, S>>>(inputMovesTo)),
+				Collections.unmodifiableMap(new HashMap<Integer, Collection<SFAEpsilon<P, S>>>(epsilonFrom)),
+				Collections.unmodifiableMap(new HashMap<Integer, Collection<SFAEpsilon<P, S>>>(epsilonTo)),
+				transitionCount,
+				maxStateId);
+		cl.isDeterministic = isDeterministic;
+		cl.isTotal = isTotal;
+		cl.isEmpty = isEmpty;
+		cl.isEpsilonFree = isEpsilonFree;
+
+		cl.initialState = initialState;
 
 		return cl;
 	}
