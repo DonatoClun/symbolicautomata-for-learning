@@ -1823,13 +1823,29 @@ public class SFA<P, S> extends Automaton<P, S> {
 		}
 
 		// Check transitions out of a state are mutually exclusive
-		for (Integer state : states) {
-			List<SFAMove<P, S>> movesFromState = new ArrayList<SFAMove<P, S>>(getTransitionsFrom(state));
+//		for (Integer state : states) {
+//			List<SFAMove<P, S>> movesFromState = new ArrayList<SFAMove<P, S>>(getTransitionsFrom(state));
+//			for (int i = 0; i < movesFromState.size(); i++) {
+//				SFAMove<P, S> t1 = movesFromState.get(i);
+//				for (int p = i + 1; p < movesFromState.size(); p++) {
+//					SFAMove<P, S> t2 = movesFromState.get(p);
+//					if (!t1.isDisjointFrom(t2, ba)) {
+//						isDeterministic = false;
+//						return false;
+//					}
+//				}
+//			}
+//		}
 
-			for (int i = 0; i < movesFromState.size(); i++) {
-				SFAMove<P, S> t1 = movesFromState.get(i);
-				for (int p = i + 1; p < movesFromState.size(); p++) {
-					SFAMove<P, S> t2 = movesFromState.get(p);
+		for (Integer state : states) {
+			//List<SFAMove<P, S>> movesFromState = new ArrayList<SFAMove<P, S>>(getTransitionsFrom(state));
+			Collection<SFAInputMove<P, S>> inputMovesFrom = getInputMovesFrom(state);
+			SFAInputMove[] movesFromState = new SFAInputMove[inputMovesFrom.size()];
+			inputMovesFrom.toArray(movesFromState);
+			for (int i = 0; i < movesFromState.length; i++) {
+				SFAMove<P, S> t1 = movesFromState[i];
+				for (int p = i + 1; p < movesFromState.length; p++) {
+					SFAMove<P, S> t2 = movesFromState[p];
 					if (!t1.isDisjointFrom(t2, ba)) {
 						isDeterministic = false;
 						return false;
