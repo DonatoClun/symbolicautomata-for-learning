@@ -549,7 +549,8 @@ public class SFAAlgebraLearner <P,D> extends AlgebraLearner <SFA <P,D>, List <D>
         		throw new AssertionError("Counterexample given is not a counterexample");
         }        
         proccessCounterexample(counterexample);
-        return constructModel();           		
+			SFA<P, D> newmodel = constructModel();
+			return newmodel;
     }
 
     public SFA <P,D> getModelFinal(EquivalenceOracle <SFA <P, D>, List <D>> equiv) throws TimeoutException {

@@ -22,7 +22,9 @@ public class EqualityAlgebraLearner <P,D> extends AlgebraLearner <P,D> {
 	
 	private BooleanAlgebra <P,D> ba;
 	private HashSet <D> posExamples;
+	private P positiveModel;
 	private HashSet <D> negExamples;
+	private P negativeModel;
 	private MembershipOracle <D>memb;
 	
 
@@ -30,26 +32,29 @@ public class EqualityAlgebraLearner <P,D> extends AlgebraLearner <P,D> {
 		ba = b;
 		memb = m;
 		posExamples = new HashSet <>();
+		positiveModel = ba.False();
 		negExamples = new HashSet <>();
+		negativeModel = ba.False();
 	}
 	
 	private P generatePositiveModel() throws TimeoutException {
-		P model = ba.False();
+//		P model = ba.False();
 		if (negExamples.size() == 0) {
 			return ba.True();
 		}		
-		for (D e : posExamples) {
-			model = ba.MkOr(ba.MkAtom(e), model);
-		}
-		return model;
+//		for (D e : posExamples) {
+//			model = ba.MkOr(ba.MkAtom(e), model);
+//		}
+		return positiveModel;
 	}
 	
 	private P generateNegativeModel() throws TimeoutException {
-		P model = ba.False();
-		for (D e : negExamples) {
-			model = ba.MkOr(ba.MkAtom(e), model);
-		}
-		return ba.MkNot(model);		
+//		P model = ba.False();
+//		for (D e : negExamples) {
+//			model = ba.MkOr(ba.MkAtom(e), model);
+//		}
+//		return ba.MkNot(model);
+		return ba.MkNot(negativeModel);
 	}
 	
 	/**
@@ -84,8 +89,10 @@ public class EqualityAlgebraLearner <P,D> extends AlgebraLearner <P,D> {
 	private void updateExampleLists(D atom) throws TimeoutException {		
 		if (memb.query(atom)) {
 			posExamples.add(atom);
+			positiveModel = ba.MkOr(ba.MkAtom(atom), positiveModel);
 		} else {
-			negExamples.add(atom);			
+			negExamples.add(atom);
+			negativeModel = ba.MkOr(ba.MkAtom(atom), negativeModel);
 		}
 		return;
 	}

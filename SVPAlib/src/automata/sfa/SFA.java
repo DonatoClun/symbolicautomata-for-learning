@@ -15,6 +15,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.Stack;
 
@@ -27,6 +28,7 @@ import automata.safa.SAFA;
 import automata.safa.SAFAInputMove;
 import automata.safa.booleanexpression.PositiveBooleanExpression;
 import theory.BooleanAlgebra;
+import theory.characters.CharPred;
 import utilities.Block;
 import utilities.Pair;
 import utilities.Timers;
@@ -483,6 +485,169 @@ public class SFA<P, S> extends Automaton<P, S> {
 		if (aut1.isDeterministic && aut2.isDeterministic) {
 			sfa.isDeterministic = true;
 		}
+		sfa.isTotal = true;
+		sfa.isEpsilonFree = true;
+		return sfa;
+	}
+
+	private static class ProductAutomatonConfiguration<A, B> {
+		private final List<SFA<A, B>> autList;
+		private final int size;
+		private final ArrayList<Integer> configuration;
+		private ProductAutomatonConfiguration(ArrayList<Integer> configuration, List<SFA<A, B>> autList) {
+			this.autList = autList;
+			this.size = autList.size();
+			this.configuration = configuration;
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (o == this) return true;
+			if (!(o instanceof ProductAutomatonConfiguration))
+				return false;
+
+			ProductAutomatonConfiguration c = (ProductAutomatonConfiguration)o;
+
+			if (c.size != this.size || c.autList.size() != this.autList.size()) {
+				return false;
+			}
+
+			for (int n = 0; n < this.configuration.size(); n++) {
+				if (this.configuration.get(n) != c.configuration.get(n)) {
+					return false;
+				}
+			}
+			return true;
+		}
+
+		private static final int a = 1664525;
+		private static final int c = 1013904223;
+		@Override
+		public int hashCode() {
+			int result = a * size + c;
+			int n = 0;
+			for (Integer v : configuration) {
+				n++;
+				result = a * (result + (v << n)) + c;
+				n = n % 4;
+			}
+			return result;
+		}
+
+		private ArrayList<Pair<ArrayList<Integer>, A>> getValidConfigurationsFrom(BooleanAlgebra<A, B> ba)
+				throws TimeoutException {
+
+			ArrayList<Pair<ArrayList<Integer>, A>> validConfigurations = new ArrayList<>();
+
+			ArrayList<Pair<ArrayList<Integer>, A>> newValidConfigurations = new ArrayList<>();
+
+			validConfigurations.add(new Pair<>(new ArrayList<>(), ba.True()));
+
+			for (int nAutomaton = 0; nAutomaton < size; nAutomaton++) {
+				SFA<A, B> aut = autList.get(nAutomaton);
+				Collection<SFAInputMove<A, B>> moves = aut.getInputMovesFrom(configuration.get(nAutomaton));
+				for (SFAInputMove<A, B> move : moves) {
+					// I apply this move to each partial configurations
+					for (int partialConfigNumber = 0; partialConfigNumber < validConfigurations.size(); partialConfigNumber++) {
+						Pair<ArrayList<Integer>, A> partialConfigurationBeingProcessedPair = validConfigurations
+								.get(partialConfigNumber);
+						ArrayList<Integer> partialConfigurationBeingProcessed = partialConfigurationBeingProcessedPair.first;
+						A partialConfigurationPred = partialConfigurationBeingProcessedPair.second;
+						A newPred = ba.MkAnd(partialConfigurationPred, move.guard);
+						if (ba.IsSatisfiable(newPred)) {
+							ArrayList<Integer> newValidConfiguration = new ArrayList<>(partialConfigurationBeingProcessed.size()+1);
+							newValidConfiguration.addAll(partialConfigurationBeingProcessed);
+							newValidConfiguration.add(move.to);
+							newValidConfigurations.add(new Pair<>(newValidConfiguration, newPred));
+						}
+					}
+				}
+				ArrayList<Pair<ArrayList<Integer>, A>> temp = validConfigurations;
+				validConfigurations = newValidConfigurations;
+				newValidConfigurations = temp;
+				newValidConfigurations.clear();
+			}
+
+			return validConfigurations;
+		}
+		private boolean isFinal() {
+			for (int n = 0; n < autList.size(); n++) {
+				SFA<A, B> absfa = autList.get(n);
+				if (absfa.isFinalState(configuration.get(n)))
+					return true;
+			}
+			return false;
+		}
+	}
+
+	public static <A, B> SFA<A, B> unionAll(List<SFA<A, B>> aut, BooleanAlgebra<A, B> ba)
+			throws TimeoutException {
+
+
+		for (SFA<A, B> a : aut) {
+			if (!a.isTotal || !a.isDeterministic || !a.isEpsilonFree) {
+				throw new RuntimeException("unionalll: non total or nondet");
+			}
+		}
+
+		// components of new SFA
+		Collection<SFAMove<A, B>> transitions = new ArrayList<SFAMove<A, B>>();
+		Integer initialState = 0;
+		Collection<Integer> finalStates = new ArrayList<Integer>();
+
+		// reached contains the product states (p1,p2) we discovered and maps
+		// them to a stateId
+		HashMap<ProductAutomatonConfiguration<A, B>, Integer> reached = new HashMap<>();
+		// toVisit contains the product states we still have not explored
+		LinkedList<ProductAutomatonConfiguration<A, B>> toVisit = new LinkedList<>();
+
+		// The initial state is the pair consisting of the initial
+		// states of aut1 and aut2
+
+		ArrayList<Integer> initConfig = new ArrayList<>(aut.size());
+		for (SFA<A, B> a : aut) {
+			initConfig.add(a.initialState);
+		}
+		ProductAutomatonConfiguration<A, B> initialConfig =
+				new ProductAutomatonConfiguration<A, B>(initConfig, aut);
+
+		reached.put(initialConfig, 0);
+		toVisit.add(initialConfig);
+
+		// Explore the product automaton until no new states can be reached
+		while (!toVisit.isEmpty()) {
+			ProductAutomatonConfiguration<A, B> currentState = toVisit.removeFirst();
+			int currentConfID = reached.get(currentState);
+
+			// if both the epsilon closures contain a final state currentStateID
+			// is final
+			if (currentState.isFinal())
+				finalStates.add(currentConfID);
+
+			ArrayList<Pair<ArrayList<Integer>, A>> validConfigurationsFrom = currentState
+					.getValidConfigurationsFrom(ba);
+
+			for (Pair<ArrayList<Integer>, A> validConf : validConfigurationsFrom) {
+				ArrayList<Integer> confRaw = validConf.first;
+				A pred = validConf.second;
+				ProductAutomatonConfiguration<A, B> nextConf = new ProductAutomatonConfiguration<>(confRaw, aut);
+
+				int nextConfId;
+				if (!reached.containsKey(nextConf)) {
+					int newId = reached.size();
+					reached.put(nextConf, newId);
+					toVisit.add(nextConf);
+					nextConfId = newId;
+				} else
+					nextConfId = reached.get(nextConf);
+
+				SFAInputMove<A, B> newTrans = new SFAInputMove<A, B>(currentConfID, nextConfId, pred);
+				transitions.add(newTrans);
+			}
+		}
+
+		SFA<A, B> sfa = MkSFA(transitions, initialState, finalStates, ba, false);
+		sfa.isDeterministic = true;
 		sfa.isTotal = true;
 		sfa.isEpsilonFree = true;
 		return sfa;
