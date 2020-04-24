@@ -369,7 +369,7 @@ public abstract class VPAutomaton<P, S> {
 						for (Return<P, S> tReturn : getReturnsFrom(toState, tCall.stackState)) {
 							int stId = stateToId.get(tReturn.to);
 							if (!wmReachRel[id1][stId]) {
-								P conj = ba.MkAnd(tCall.guard, tReturn.guard);
+								P conj = ba.MkAnd(ba.toBinaryPredicate(tCall.guard), tReturn.guard);
 								if (ba.IsSatisfiable(conj)) {
 									changed = true;
 									wmReachRel[id1][stId] = true;
@@ -657,7 +657,7 @@ public abstract class VPAutomaton<P, S> {
 						for (Return<P, S> tReturn : getReturnsFrom(toState, tCall.stackState)) {
 							int stId = stateToId.get(tReturn.to);
 							if (!wmReachRel[id1][stId])
-								if (ba.IsSatisfiable(ba.MkAnd(tCall.guard, tReturn.guard))) {
+								if (ba.IsSatisfiable(ba.MkAnd(ba.toBinaryPredicate(tCall.guard), tReturn.guard))) {
 									changed = true;
 									wmReachRel[id1][stId] = true;
 									newStates.add(tReturn.to);

@@ -561,5 +561,5 @@ public class SFAAlgebraLearner <P,D> extends AlgebraLearner <SFA <P,D>, List <D>
         }
         return cleanModel;
     }
-    	
+
 }

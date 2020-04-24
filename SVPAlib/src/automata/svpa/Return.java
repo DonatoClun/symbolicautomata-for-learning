@@ -49,6 +49,7 @@ public class Return<U, S> extends SVPAMove<U, S> {
 	public Pair<Integer, Stack<Pair<Integer, S>>> getNextState(
 			Pair<Integer, Stack<Pair<Integer, S>>> state,
 			TaggedSymbol<S> input, BooleanAlgebra<U, S> ba) throws TimeoutException {
+
 		if (input.tag == SymbolTag.Return) {
 			Integer currState = state.first;
 			if (currState == from) {
@@ -78,7 +79,7 @@ public class Return<U, S> extends SVPAMove<U, S> {
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() {
-		return String.format("R: %s -%s, %s-> %s", from, guard, stackState, to);
+		return String.format("R: %s - %s {{%s}}-> %s", from, guard, stackState, to);
 	}
 
 	@Override

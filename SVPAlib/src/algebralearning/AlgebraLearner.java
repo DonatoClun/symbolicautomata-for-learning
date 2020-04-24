@@ -6,6 +6,7 @@
 package algebralearning;
 
 
+import java.util.List;
 import org.sat4j.specs.TimeoutException;
 import algebralearning.oracles.EquivalenceOracle;
 /**	
@@ -24,5 +25,4 @@ public abstract class AlgebraLearner <P, D> {
     
     /* Learn iteratively a model using the provided equivalence oracle */
     public abstract P getModelFinal(EquivalenceOracle <P, D> equiv) throws TimeoutException;
-
 }

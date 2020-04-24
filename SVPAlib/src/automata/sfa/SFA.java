@@ -2288,6 +2288,33 @@ public class SFA<P, S> extends Automaton<P, S> {
 		return nonFin;
 	}
 
+	public boolean isSink(BooleanAlgebra<P, S> ba, int stateId) throws TimeoutException {
+		if (isFinalState(stateId)) {
+			return false;
+		}
+
+		boolean simpleSink = true;
+		for (SFAInputMove<P, S> move : inputMovesFrom.get(stateId)) {
+			if (move.to != stateId) {
+				simpleSink = false;
+				break;
+			}
+		}
+
+		if (simpleSink) {
+			if (epsilonFrom.get(stateId).size() > 0) {
+				simpleSink = false;
+			}
+		}
+
+		if (simpleSink) {
+			return true;
+		}
+
+		List<S> witness = getWitnessFrom(ba, stateId);
+		return witness == null;
+	}
+
 	@Override
 	public Collection<Integer> getStates() {
 		return states;

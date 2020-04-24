@@ -61,8 +61,8 @@ public class SVPA<U, S> extends VPAutomaton<U, S> {
 		try {
 			aut.addTransition(new Internal<A, B>(0, 0, ba.True()), ba, true);	
 			aut.addTransition(new Call<A, B>(0, 0, 0, ba.True()), ba, true);
-			aut.addTransition(new Return<A, B>(0, 0, 0, ba.True()), ba, true);
-			aut.addTransition(new ReturnBS<A, B>(0, 0, ba.True()), ba, true);		
+			aut.addTransition(new Return<A, B>(0, 0, 0, ba.binaryTrue()), ba, true);
+			aut.addTransition(new ReturnBS<A, B>(0, 0, ba.binaryTrue()), ba, true);
 		} catch (TimeoutException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -173,9 +173,11 @@ public class SVPA<U, S> extends VPAutomaton<U, S> {
 			return false;
 		}
 
-		for (Pair<Integer, Stack<Pair<Integer, S>>> state : conf)
-			if (isFinalState(state.first))
+		for (Pair<Integer, Stack<Pair<Integer, S>>> state : conf) {
+			if (isFinalState(state.first) && state.second.empty())
 				return true;
+		}
+
 
 		return false;
 	}
@@ -661,7 +663,7 @@ public class SVPA<U, S> extends VPAutomaton<U, S> {
 						totGuard), ba, false);
 			else
 				total.addTransition(
-						new ReturnBS<A, B>(state, newState, ba.True()), ba,
+						new ReturnBS<A, B>(state, newState, ba.binaryTrue()), ba,
 						false);
 
 			// CALL MOVES
@@ -696,19 +698,19 @@ public class SVPA<U, S> extends VPAutomaton<U, S> {
 							stackState, totGuard), ba, false);
 				else
 					total.addTransition(new Return<A, B>(state, newState,
-							stackState, ba.True()), ba, false);
+							stackState, ba.binaryTrue()), ba, false);
 			}
 		}
 		if (total.states.contains(newState)) {
 			total.addTransition(
 					new Internal<A, B>(newState, newState, ba.True()), ba, true);
 			total.addTransition(
-					new ReturnBS<A, B>(newState, newState, ba.True()), ba, true);
+					new ReturnBS<A, B>(newState, newState, ba.binaryTrue()), ba, true);
 			total.addTransition(
 					new Call<A, B>(newState, newState, 0, ba.True()), ba, true);
 			for (Integer stSt : total.stackStates) {
 				total.addTransition(new Return<A, B>(newState, newState, stSt,
-						ba.True()), ba, true);
+						ba.binaryTrue()), ba, true);
 			}
 		}
 

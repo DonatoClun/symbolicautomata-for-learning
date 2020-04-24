@@ -68,6 +68,36 @@ public abstract class BooleanAlgebra<P, S> {
 	public abstract P False();
 
 	/**
+	 * @return the binary predicate true
+	 */
+	public P binaryTrue() {
+		throw new UnsupportedOperationException("binary predicates are not supported by this solver");
+	}
+
+	/**
+	 * @return the binary predicate false
+	 */
+	public P binaryFalse() {
+		throw new UnsupportedOperationException("binary predicates are not supported by this solver");
+	}
+
+	/**
+	 * @return transforms the unary predicate into a binary predicate accepting (x,y) in
+	 * which x satisfies the given predicate and without constraints on y.
+	 */
+	public P toBinaryPredicate(P predicate) {
+		throw new UnsupportedOperationException("binary predicates are not supported by this solver");
+	}
+
+	/**
+	 * @return transforms a pair of unary predicate into a binary predicate accepting (x,y) in
+	 * which x satisfies the first predicate and y satisfies the second.
+	 */
+	public P toBinaryPredicate(P predicate1, P predicate2) {
+		throw new UnsupportedOperationException("binary predicates are not supported by this solver");
+	}
+
+	/**
 	 * @return true iff <code>p1</code> and <code>p2</code> are equivalent
 	 * @throws TimeoutException 
 	 */
