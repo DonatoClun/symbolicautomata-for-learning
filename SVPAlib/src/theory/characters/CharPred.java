@@ -12,6 +12,7 @@ import com.google.common.collect.ImmutableList;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -25,7 +26,11 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
 /**
  * CharPred: a set of characters represented as contiguous intervals
  */
-public class CharPred extends ICharPred{
+public class CharPred extends ICharPred implements Serializable {
+
+	public CharPred() {
+		intervals = null;
+	}
 	
 	/**
 	 * The set containing only the character <code>c</code>

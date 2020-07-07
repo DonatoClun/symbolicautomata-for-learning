@@ -8,6 +8,7 @@ package automata;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -29,7 +30,7 @@ import theory.BooleanAlgebra;
  * @param <S>
  *            domain of the automaton alphabet
  */
-public abstract class Automaton<P, S> {
+public abstract class Automaton<P, S> implements Serializable {
 
 	// ------------------------------------------------------
 	// Automata properties

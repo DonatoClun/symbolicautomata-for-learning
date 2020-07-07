@@ -6,6 +6,7 @@
  */
 package automata.sfa;
 
+import java.io.Serializable;
 import org.sat4j.specs.TimeoutException;
 
 import theory.BooleanAlgebra;
@@ -15,9 +16,15 @@ import theory.BooleanAlgebra;
  * @param <P> set of predicates over the domain S
  * @param <S> domain of the automaton alphabet
  */
-public class SFAInputMove<P,S> extends SFAMove<P, S>{
+public class SFAInputMove<P,S> extends SFAMove<P, S> implements Serializable {
 
-	public P guard;
+	public final P guard;
+
+	// only for deserialization
+	public SFAInputMove() {
+		super();
+		guard = null;
+	}
 	
 	/**
 	 * Constructs an FSA Transition that starts from state <code>from</code> and ends at state

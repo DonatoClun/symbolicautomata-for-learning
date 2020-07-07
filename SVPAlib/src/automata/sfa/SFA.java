@@ -6,6 +6,7 @@
  */
 package automata.sfa;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -43,7 +44,7 @@ import utilities.UnionFindHopKarp;
  * @param <S>
  *            domain of the automaton alphabet
  */
-public class SFA<P, S> extends Automaton<P, S> {
+public class SFA<P, S> extends Automaton<P, S> implements Serializable {
 	// ------------------------------------------------------
 	// Constant automata
 	// ------------------------------------------------------

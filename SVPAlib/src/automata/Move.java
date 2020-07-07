@@ -6,6 +6,7 @@
  */
 package automata;
 
+import java.io.Serializable;
 import org.sat4j.specs.TimeoutException;
 
 import theory.BooleanAlgebra;
@@ -15,7 +16,11 @@ import theory.BooleanAlgebra;
  * @param <P> set of predicates over the domain S
  * @param <S> domain of the automaton alphabet
  */
-public abstract class Move<P, S> {
+public abstract class Move<P, S> implements Serializable {
+
+	public Move() {
+
+	}
 
 	// Source state
 	public Integer from;

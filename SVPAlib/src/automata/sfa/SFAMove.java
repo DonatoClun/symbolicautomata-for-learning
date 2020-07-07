@@ -6,6 +6,7 @@
  */
 package automata.sfa;
 
+import java.io.Serializable;
 import theory.BooleanAlgebra;
 
 import org.sat4j.specs.TimeoutException;
@@ -17,7 +18,11 @@ import automata.Move;
  * @param <P> set of predicates over the domain S
  * @param <S> domain of the automaton alphabet
  */
-public abstract class SFAMove<P, S> extends Move<P, S> {
+public abstract class SFAMove<P, S> extends Move<P, S> implements Serializable {
+
+	public SFAMove() {
+		super();
+	}
 
 	/**
 	 * Constructs an FSA Transition that starts from state <code>from</code> and
