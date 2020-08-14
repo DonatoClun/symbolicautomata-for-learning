@@ -204,9 +204,11 @@ public abstract class Automaton<P, S> implements Serializable {
 	}
 
 	public List<S> getWitnessFrom(BooleanAlgebra<P, S> ba, Integer stateId) throws TimeoutException {
-		if (isEmpty)
-			return null;
+		Map<Integer, LinkedList<S>> witnessMap = getWitnessMap(ba);
+		return witnessMap.get(stateId);
+	}
 
+	public Map<Integer, LinkedList<S>> getWitnessMap(BooleanAlgebra<P, S> ba) throws TimeoutException {
 		Map<Integer, LinkedList<S>> witMap = new HashMap<Integer, LinkedList<S>>();
 		for (Integer state : getFinalStates())
 			witMap.put(state, new LinkedList<S>());
@@ -238,7 +240,7 @@ public abstract class Automaton<P, S> implements Serializable {
 			}
 
 		}
-		return witMap.get(stateId);
+		return witMap;
 	}
 
 	/**
@@ -274,7 +276,11 @@ public abstract class Automaton<P, S> implements Serializable {
 	}
 
 	public Collection<Integer> getReachedConfiguration(List<S> input, BooleanAlgebra<P, S> ba) throws TimeoutException {
-		Collection<Integer> currConf = getEpsClosure(getInitialState(), ba);
+		return getReachedConfiguration(getInitialState(), input, ba);
+	}
+
+	public Collection<Integer> getReachedConfiguration(Integer startingState, List<S> input, BooleanAlgebra<P, S> ba) throws TimeoutException {
+		Collection<Integer> currConf = getEpsClosure(startingState, ba);
 		for (S el : input) {
 			currConf = getNextState(currConf, el, ba);
 			currConf = getEpsClosure(currConf, ba);
