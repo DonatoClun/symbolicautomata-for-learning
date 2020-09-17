@@ -66,7 +66,7 @@ public class SFAInputMove<P,S> extends SFAMove<P, S> implements Serializable {
 	public boolean equals(Object other) {
 		if (other instanceof SFAInputMove<?, ?>) {
 			SFAInputMove<?, ?> otherCasted = (SFAInputMove<?, ?>) other;
-			return otherCasted.from==from && otherCasted.to==to && otherCasted.guard==guard;
+			return otherCasted.from.equals(from) && otherCasted.to.equals(to) && otherCasted.guard.equals(guard);
 		}
 
 		return false;
