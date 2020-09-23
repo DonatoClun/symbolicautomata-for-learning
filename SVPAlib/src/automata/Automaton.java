@@ -41,6 +41,8 @@ public abstract class Automaton<P, S> implements Serializable {
 	protected boolean isEpsilonFree;
 	protected boolean isTotal;
 
+	public final HashMap<Integer, String> statesLabels = new HashMap<>();
+
 	public Automaton() {
 		isEmpty = false;
 		isDeterministic = false;
@@ -57,8 +59,13 @@ public abstract class Automaton<P, S> implements Serializable {
 			FileWriter fw = new FileWriter(path + name + (name.endsWith(".dot") ? "" : ".dot"));
 			fw.write("digraph " + name + "{\n rankdir=LR;\n");
 			for (Integer state : getStates()) {
+				String additionalLabel = statesLabels.get(state);
 
-				fw.write(state + "[label=" + state);
+				fw.write(state + "[label=\"" + state);
+				if (additionalLabel!=null) {
+					fw.write(" " + additionalLabel);
+				}
+				fw.write("\"");
 				if (getFinalStates().contains(state))
 					fw.write(",peripheries=2");
 

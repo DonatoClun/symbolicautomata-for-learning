@@ -22,6 +22,8 @@ public abstract class Move<P, S> implements Serializable {
 
 	}
 
+	public String additionalAttribute = null; //if present will be added to the toString output
+
 	// Source state
 	public Integer from;
 	// Target state

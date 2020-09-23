@@ -54,12 +54,14 @@ public class SFAInputMove<P,S> extends SFAMove<P, S> implements Serializable {
 
 	@Override
 	public String toString() {
-		return String.format("S: %s -%s-> %s",from,guard, to);
+		return String.format("S: %s -%s-> %s",from, guard.toString().trim(), to)
+				+ ((additionalAttribute!=null) ? " [" + additionalAttribute + "]": "");
 	}
 
 	@Override
 	public String toDotString() {
-		return String.format("%s -> %s [label=\"%s\"]\n", from,to,guard);
+		return String.format("%s -> %s [label=\"%s\"]\n", from, to, guard.toString().trim()
+				+ ((additionalAttribute!=null) ? " [" + additionalAttribute + "]": ""));
 	}
 
 	@Override
