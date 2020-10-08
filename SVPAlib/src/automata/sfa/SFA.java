@@ -6,6 +6,8 @@
  */
 package automata.sfa;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -2319,6 +2321,65 @@ public class SFA<P, S> extends Automaton<P, S> implements Serializable {
 	@Override
 	public Collection<Integer> getStates() {
 		return states;
+	}
+
+	public boolean createDotFileNoSink(String name, String path, BooleanAlgebra<P,S> ba) {
+		List<Integer> sinkStates = new ArrayList<>();
+		for (Integer state : getStates()) {
+			try {
+				if (isSink(ba, state)) {
+					sinkStates.add(state);
+				}
+			} catch (TimeoutException e) {
+				throw new RuntimeException(e);
+			}
+		}
+
+		try {
+			FileWriter fw = new FileWriter(path + name + (name.endsWith(".dot") ? "" : ".dot"));
+			fw.write("digraph " + name + "{\n rankdir=LR;\n");
+			for (Integer state : getStates()) {
+				if (sinkStates.contains(state)) {
+					continue;
+				}
+
+				String additionalLabel = statesLabels.get(state);
+
+				fw.write(state + "[label=\"" + state);
+				if (additionalLabel!=null) {
+					fw.write(" " + additionalLabel);
+				}
+				fw.write("\"");
+				if (getFinalStates().contains(state))
+					fw.write(",peripheries=2");
+
+				fw.write("]\n");
+				if (isInitialState(state))
+					fw.write("XX" + state + " [color=white, label=\"\"]");
+			}
+
+			fw.write("XX" + getInitialState() + " -> " + getInitialState() + "\n");
+
+			for (Integer state : getStates()) {
+				if (sinkStates.contains(state)) {
+					continue;
+				}
+				for (Move<P, S> t : getMovesFrom(state)){
+					if (sinkStates.contains(t.to)) {
+						continue;
+					}
+					fw.write(t.toDotString());
+				}
+
+			}
+
+			fw.write("}");
+			fw.close();
+		} catch (IOException e) {
+			System.out.println(e);
+			return false;
+		}
+		return true;
 	}
 
 	@Override

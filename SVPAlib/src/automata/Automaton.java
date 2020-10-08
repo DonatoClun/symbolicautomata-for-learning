@@ -55,6 +55,7 @@ public abstract class Automaton<P, S> implements Serializable {
 	 * dot representation of the automaton. Adds .dot if necessary
 	 */
 	public boolean createDotFile(String name, String path) {
+
 		try {
 			FileWriter fw = new FileWriter(path + name + (name.endsWith(".dot") ? "" : ".dot"));
 			fw.write("digraph " + name + "{\n rankdir=LR;\n");
