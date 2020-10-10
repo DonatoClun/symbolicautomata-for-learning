@@ -2337,7 +2337,8 @@ public class SFA<P, S> extends Automaton<P, S> implements Serializable {
 
 		try {
 			FileWriter fw = new FileWriter(path + name + (name.endsWith(".dot") ? "" : ".dot"));
-			fw.write("digraph " + name + "{\n rankdir=LR;\n");
+			fw.write("digraph " + name.replaceAll("/[^A-Za-z0-9 ]/", "")
+					+ "{\n rankdir=LR;\n");
 			for (Integer state : getStates()) {
 				if (sinkStates.contains(state)) {
 					continue;
