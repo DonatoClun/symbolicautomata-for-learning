@@ -31,4 +31,9 @@ public class EqualityEquivalenceOracle <P, D> implements EquivalenceOracle <P,D>
 		return ba.generateWitness(negInt);				
 	}
 
+	@Override
+	public Counterexample<D> getCounterexample(P model, long deadline) throws TimeoutException {
+		throw new RuntimeException("Not implemented.");
+	}
+
 }

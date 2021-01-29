@@ -60,7 +60,13 @@ public class SFAEquivalenceOracle <P,D> implements EquivalenceOracle <SFA <P,D>,
 		}
     }
 
-    /**
+	@Override
+	public Counterexample<List<D>> getCounterexample(SFA<P, D> model, long deadline)
+			throws TimeoutException {
+		throw new RuntimeException("Not implemented.");
+	}
+
+	/**
      * @return the number of cached counterexamples used so far.
      */
     	public Integer getCachedCeNum() {

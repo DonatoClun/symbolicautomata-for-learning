@@ -28,4 +28,9 @@ public class BDDEquivalenceOracle implements EquivalenceOracle <BDD, BDD> {
 		return ce;
 	}
 
+	@Override
+	public Counterexample<BDD> getCounterexample(BDD model, long deadline) throws TimeoutException {
+		throw new RuntimeException("Not implemented.");
+	}
+
 }
