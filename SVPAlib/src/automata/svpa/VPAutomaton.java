@@ -1,5 +1,6 @@
 package automata.svpa;
 
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Collection;
@@ -230,7 +231,8 @@ public abstract class VPAutomaton<P, S> {
 	 */
 	public boolean createDotFile(String name, String path) {
 		try {
-			FileWriter fw = new FileWriter(path + name + (name.endsWith(".dot") ? "" : ".dot"));
+			File file = new File(path, name + (name.endsWith(".dot") ? "" : ".dot"));
+			FileWriter fw = new FileWriter(file);
 			fw.write("digraph " + name + "{\n rankdir=LR;\n");
 			for (Integer state : getStates()) {
 

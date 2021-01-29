@@ -166,14 +166,17 @@ public class CharPred extends ICharPred implements Serializable {
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("[");
-		for (ImmutablePair<Character, Character> pair : intervals) {
+		for (int i = 0; i < intervals.size(); i++) {
+			ImmutablePair<Character, Character> pair = intervals.get(i);
 			if (pair.left == pair.right)
 				sb.append(printChar(pair.left));
 			else {
 				sb.append(printChar(pair.left));
-				sb.append("-");
+				sb.append("->");
 				sb.append(printChar(pair.right));
-				sb.append(' ');
+			}
+			if (i<intervals.size()-1) {
+				sb.append(", ");
 			}
 		}
 		sb.append("]");
