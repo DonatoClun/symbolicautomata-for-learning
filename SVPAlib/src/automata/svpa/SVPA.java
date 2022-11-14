@@ -1073,7 +1073,7 @@ public class SVPA<U, S> extends VPAutomaton<U, S> {
 			Collection<Pair<Integer, Integer>> state, Integer fst) {
 		HashSet<Pair<Integer, Integer>> sc = new HashSet<Pair<Integer, Integer>>();
 		for (Pair<Integer, Integer> st : state)
-			if (st.first == fst)
+			if (st.first.equals(fst))
 				sc.add(st);
 		return sc;
 	}
@@ -1082,7 +1082,7 @@ public class SVPA<U, S> extends VPAutomaton<U, S> {
 			Collection<Pair<Integer, Integer>> state, Integer sec) {
 		HashSet<Pair<Integer, Integer>> sc = new HashSet<Pair<Integer, Integer>>();
 		for (Pair<Integer, Integer> st : state)
-			if (st.second == sec)
+			if (st.second.equals(sec))
 				sc.add(st);
 		return sc;
 	}
@@ -1293,7 +1293,7 @@ public class SVPA<U, S> extends VPAutomaton<U, S> {
 
 		Collection<Call<U, S>> output = new HashSet<Call<U, S>>();
 		for (Call<U, S> call : trset)
-			if (call.stackState == stackState)
+			if (call.stackState.equals(stackState))
 				output.add(call);
 		return output;
 	}
@@ -1634,7 +1634,7 @@ public class SVPA<U, S> extends VPAutomaton<U, S> {
 			BooleanAlgebra<U, S> ba, boolean skipSatCheck) throws TimeoutException {
 
 		if (transition.isEpsilonTransition()) {
-			if (transition.to == transition.from)
+			if (transition.to.equals(transition.from))
 				return;
 			isEpsilonFree = false;
 		}
